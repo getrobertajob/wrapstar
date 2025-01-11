@@ -8,12 +8,24 @@ const app = express();
 const PORT = process.env.PORT || 5000; // Allow dynamic port binding
 
 // CORS Configuration
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://wrapstar-robert-lutes-projects.vercel.app", // Replace with your frontend's deployed URL
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-};
-app.use(cors(corsOptions));
+const allowedOrigins = [
+  "https://wrapstar-robert-lutes-projects.vercel.app", // Main frontend URL
+  "https://wrapstar-eh0kxhamn-robert-lutes-projects.vercel.app", // Alternate frontend URL
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/search", async (req, res) => {
@@ -47,9 +59,6 @@ app.get("/image", async (req, res) => {
   try {
     const response = await axios.get(url, { responseType: "arraybuffer" });
 
-    // Set CORS header specifically for image requests
-    res.set("Access-Control-Allow-Origin", "*");  // Allow any origin (or specify a specific one if needed)
-
     // Crop the image to a square
     const imageBuffer = await sharp(response.data)
       .resize({
@@ -66,14 +75,6 @@ app.get("/image", async (req, res) => {
     console.error("Error processing image:", error.message);
     res.status(500).json({ error: "Failed to process image" });
   }
-});
-
-// Handle OPTIONS requests for CORS preflight
-app.options("/image", (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
-  res.status(200).end();
 });
 
 // Add a route to display "server is running"
