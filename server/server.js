@@ -54,4 +54,9 @@ app.get("/image", async (req, res) => {
   }
 });
 
+// Add a route to display "server is running"
+app.get('/', (req, res) => {
+  res.send("server is running.");
+});
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
