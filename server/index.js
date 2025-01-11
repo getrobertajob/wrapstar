@@ -2,16 +2,27 @@ const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const sharp = require("sharp");
+require("dotenv").config(); // Load environment variables from .env file
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000; // Allow dynamic port binding
 
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "*", // Replace with your frontend's deployed URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/search", async (req, res) => {
-  const { q } = req.query; 
-  const apiKey = "bbd0fbadedfed472275f5149d0eddb03cbc9a18c238b573b2dcf1c96599590c7";
+  const { q } = req.query;
+  const apiKey = process.env.SERP_API_KEY; // Use environment variable for API key
+
+  if (!apiKey) {
+    return res.status(500).json({ error: "API key is missing. Check environment variables." });
+  }
 
   try {
     const response = await axios.get(`https://serpapi.com/search`, {
@@ -24,6 +35,7 @@ app.get("/search", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
+    console.error("Error fetching search results:", error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -38,10 +50,10 @@ app.get("/image", async (req, res) => {
     // Crop the image to a square
     const imageBuffer = await sharp(response.data)
       .resize({
-        width: 150, // Set square dimensions 
+        width: 150, // Set square dimensions
         height: 150,
-        fit: sharp.fit.cover, 
-        position: sharp.strategy.entropy, 
+        fit: sharp.fit.cover,
+        position: sharp.strategy.entropy,
       })
       .toBuffer();
 
@@ -54,7 +66,7 @@ app.get("/image", async (req, res) => {
 });
 
 // Add a route to display "server is running"
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send("server is running.");
 });
 

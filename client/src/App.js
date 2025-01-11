@@ -14,7 +14,7 @@ const App = () => {
     setLoading(true);
     try {
       const searchQuery = `${celebrity} headshot`;
-      const response = await axios.get("http://localhost:5000/search", {
+      const response = await axios.get("https://wrapstar-server.vercel.app/search", {
         params: { q: searchQuery },
       });
 
@@ -88,7 +88,7 @@ const App = () => {
           images.map((image, index) => (
             <img
               key={index}
-              src={`http://localhost:5000/image?url=${encodeURIComponent(image.thumbnail || image.original)}`}
+              src={`https://wrapstar-robert-lutes-projects.vercel.app/image?url=${encodeURIComponent(image.thumbnail || image.original)}`}
               alt={`Headshot ${index + 1}`}
               className="image"
             />
