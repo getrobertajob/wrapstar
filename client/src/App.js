@@ -88,7 +88,7 @@ const App = () => {
           images.map((image, index) => (
             <img
               key={index}
-              src={`https://wrapstar-robert-lutes-projects.vercel.app/image?url=${encodeURIComponent(image.thumbnail || image.original)}`}
+              src={`https://wrapstar-server.vercel.app/image?url=${encodeURIComponent(image.thumbnail || image.original)}`}
               alt={`Headshot ${index + 1}`}
               className="image"
             />
