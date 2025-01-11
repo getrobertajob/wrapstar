@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000; // Allow dynamic port binding
 
 // CORS Configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "*", // Replace with your frontend's deployed URL
+  origin: process.env.FRONTEND_URL || "https://wrapstar-eh0kxhamn-robert-lutes-projects.vercel.app", // Replace with your frontend's deployed URL
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
 };
