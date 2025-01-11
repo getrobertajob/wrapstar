@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/search", async (req, res) => {
-  const { q } = req.query; // Get the query parameter (celebrity name)
+  const { q } = req.query; 
   const apiKey = "bbd0fbadedfed472275f5149d0eddb03cbc9a18c238b573b2dcf1c96599590c7";
 
   try {
@@ -22,7 +22,6 @@ app.get("/search", async (req, res) => {
       },
     });
 
-    // Return the search results
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -39,10 +38,10 @@ app.get("/image", async (req, res) => {
     // Crop the image to a square
     const imageBuffer = await sharp(response.data)
       .resize({
-        width: 150, // Set square dimensions (adjust as needed)
+        width: 150, // Set square dimensions 
         height: 150,
-        fit: sharp.fit.cover, // Ensures the image is cropped to fit a square
-        position: sharp.strategy.entropy, // Focuses on the most "interesting" part
+        fit: sharp.fit.cover, 
+        position: sharp.strategy.entropy, 
       })
       .toBuffer();
 
