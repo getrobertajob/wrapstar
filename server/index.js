@@ -8,11 +8,25 @@ const app = express();
 const PORT = process.env.PORT || 5000; // Allow dynamic port binding
 
 // CORS Configuration
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://wrapstar-eh0kxhamn-robert-lutes-projects.vercel.app", // Replace with your frontend's deployed URL
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-};
+const allowedOrigins = [
+  "https://wrapstar-robert-lutes-projects.vercel.app", // Main frontend URL
+  "https://wrapstar-eh0kxhamn-robert-lutes-projects.vercel.app", // Alternate frontend URL
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
