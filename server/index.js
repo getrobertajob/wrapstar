@@ -68,6 +68,7 @@ app.get("/image", async (req, res) => {
   }
 });
 
+
 // Handle OPTIONS requests for CORS preflight
 app.options("/image", (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
