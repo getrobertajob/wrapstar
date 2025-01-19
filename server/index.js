@@ -14,7 +14,8 @@ const PORT = process.env.PORT || 5000; // Allow dynamic port binding
   const allowedOrigins = [
     // "http://localhost:3000",
     "https://wrapstar.vercel.app", 
-    "https://wrapstar-server.vercel.app"
+    "https://wrapstar-server.vercel.app",
+    "https://wrapstar-robert-lutes-projects.vercel.app"
   ];
   
   const corsOptions = {
