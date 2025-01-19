@@ -1,0 +1,13 @@
+server/.env/3
+    FRONTEND_URL=https://wrapstar-robert-lutes-projects.vercel.app/
+    FRONTEND_URL=http://localhost:3000
+
+
+server/index.js/13
+    origin: process.env.FRONTEND_URL || "https://wrapstar-robert-lutes-projects.vercel.app",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+
+
+client/src/App.js/8
+    const backendUrl = "https://wrapstar-server.vercel.app";
+    const backendUrl = "http://localhost:5000";

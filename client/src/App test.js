@@ -5,8 +5,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import "./App.css";
 
-const backendUrl = "https://wrapstar-server.vercel.app";
-// const backendUrl = "http://localhost:5000";
+const backendUrl = "http://localhost:5000";
 const ITEM_TYPE = "IMAGE";
 
 const DraggableImage = ({ image, index, moveImage, removeImage }) => {
@@ -60,28 +59,16 @@ const App = () => {
 
   const handleSearch = async () => {
     if (!celebrity) return alert("Please enter a celebrity's name!");
-  
+
     setLoading(true);
     try {
-      const response = await axios.get(`${backendUrl}/search?q=${encodeURIComponent(celebrity)}+headshot`);
+      const searchQuery = '${celebrity} headshot';
+      const response = await axios.get('${backendUrl}/search', {
+        params: { q: searchQuery },
+      });
+
       const imagesResults = response.data.images_results.slice(0, 25);
-  
-      // Convert each image to a Blob URL
-      const processedImages = await Promise.all(
-        imagesResults.map(async (img) => {
-          try {
-            const imgResponse = await fetch(`${backendUrl}/image?url=${encodeURIComponent(img.thumbnail || img.original)}`);
-            const blob = await imgResponse.blob();
-            const objectUrl = URL.createObjectURL(blob);
-            return { custom: true, src: objectUrl };
-          } catch (err) {
-            console.error("Error processing image:", err);
-            return null; // Skip images that fail to load
-          }
-        })
-      );
-  
-      setImages(processedImages.filter(Boolean)); // Remove any failed images
+      setImages(imagesResults);
     } catch (error) {
       console.error("Error fetching images:", error);
       alert("Failed to fetch images. Please try again.");
@@ -89,7 +76,6 @@ const App = () => {
       setLoading(false);
     }
   };
-  
 
   const handleFolderSelection = (event) => {
     const files = Array.from(event.target.files);
