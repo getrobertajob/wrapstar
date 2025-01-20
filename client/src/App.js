@@ -48,7 +48,6 @@ const DraggableImage = ({ image, index, moveImage, removeImage }) => {
       />
     </div>
   );
-  
 };
 
 const App = () => {
@@ -60,17 +59,21 @@ const App = () => {
 
   const handleSearch = async () => {
     if (!celebrity) return alert("Please enter a celebrity's name!");
-  
+
     setLoading(true);
     try {
-      const response = await axios.get(`${backendUrl}/search?q=${encodeURIComponent(celebrity)}+headshot`);
+      const response = await axios.get(
+        `${backendUrl}/search?q=${encodeURIComponent(celebrity)}+headshot`
+      );
       const imagesResults = response.data.images_results.slice(0, 25);
-  
+
       // Convert each image to a Blob URL
       const processedImages = await Promise.all(
         imagesResults.map(async (img) => {
           try {
-            const imgResponse = await fetch(`${backendUrl}/image?url=${encodeURIComponent(img.thumbnail || img.original)}`);
+            const imgResponse = await fetch(
+              `${backendUrl}/image?url=${encodeURIComponent(img.thumbnail || img.original)}`
+            );
             const blob = await imgResponse.blob();
             const objectUrl = URL.createObjectURL(blob);
             return { custom: true, src: objectUrl };
@@ -80,7 +83,7 @@ const App = () => {
           }
         })
       );
-  
+
       setImages(processedImages.filter(Boolean)); // Remove any failed images
     } catch (error) {
       console.error("Error fetching images:", error);
@@ -89,7 +92,6 @@ const App = () => {
       setLoading(false);
     }
   };
-  
 
   const handleFolderSelection = (event) => {
     const files = Array.from(event.target.files);
@@ -245,7 +247,8 @@ const App = () => {
                 </div>
               ))}
             </div>
-
+          </div>
+          <div>
             <button className="save-button" onClick={handleSaveImage}>
               Save as PNG
             </button>
