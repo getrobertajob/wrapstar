@@ -229,6 +229,7 @@ const App = () => {
                 {loading ? "Searching..." : "Search"}
               </button>
             </div>
+            <p className="folder-text">drag & drop images to move them</p>
 
             <div id="gallery-container" ref={galleryRef} className="gallery">
               {Array.from({ length: 25 }).map((_, index) => (
