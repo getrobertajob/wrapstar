@@ -95,23 +95,34 @@ const App = () => {
 
   const handleFolderSelection = (event) => {
     const files = Array.from(event.target.files);
-    const allowedFormats = ["png", "gif", "tiff", "tif", "jpeg", "jpg", "bmp", "raw"];
-
+  
+    // Allowed file extensions (for extra safety)
+    const allowedExtensions = ["png", "gif", "tiff", "tif", "jpeg", "jpg", "bmp", "raw"];
+  
+    // Allowed MIME types (more reliable check)
+    const allowedMimeTypes = ["image/png", "image/gif", "image/tiff", "image/jpeg", "image/bmp"];
+  
     const imageFiles = files.filter((file) => {
       const fileExtension = file.name.split(".").pop().toLowerCase();
-      return allowedFormats.includes(fileExtension);
+      const fileMimeType = file.type;
+  
+      console.log(`File: ${file.name}, Extension: ${fileExtension}, MIME Type: ${fileMimeType}`);
+  
+      // Check if the extension OR the MIME type is valid
+      return allowedExtensions.includes(fileExtension) || allowedMimeTypes.includes(fileMimeType);
     });
-
+  
     if (imageFiles.length === 0) {
       alert(
         "No valid image files selected! Please choose PNG, GIF, TIFF, JPEG, JPG, BMP, or RAW files."
       );
       return;
     }
-
+  
     const imageUrls = imageFiles.map((file) => URL.createObjectURL(file));
     setCustomImages(imageUrls);
   };
+  
 
   const handleCustomImageClick = (src) => {
     setImages((prevImages) => {
@@ -198,6 +209,7 @@ const App = () => {
               id="folderInput"
               type="file"
               webkitdirectory="true"
+              accept="image/*"
               multiple
               onChange={handleFolderSelection}
               style={{ display: "none" }}
