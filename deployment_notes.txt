@@ -9,5 +9,5 @@ server/index.js/14
 
 
 client/src/App.js/11
-    const backendUrl = "https://wrapstar-server.vercel.app";
+    const backendUrl = "https://wrapstar-server.vercel.app"; 
     const backendUrl = "http://localhost:5000";

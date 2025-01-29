@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 
 
-// 2 options for "allowedOrigins", hosted server & localhost 
+// 2 options for "allowedOrigins", hosted server & localhost
 const allowedOrigins = [
   // "http://localhost:3000"
   "https://wrapstar.vercel.app", 

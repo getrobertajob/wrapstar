@@ -10,7 +10,7 @@ import "./App.css";
 const backendUrl = "https://wrapstar-server.vercel.app";
 // const backendUrl = "http://localhost:5000";
 
-// variable to designate which file types are allowed
+// variable to designate which file types are allowed 
 const ITEM_TYPE = "IMAGE";
 
 // function for drag & drop images
