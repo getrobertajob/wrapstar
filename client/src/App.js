@@ -1,3 +1,4 @@
+// Imports
 import React, { useState, useRef } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -5,10 +6,15 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import "./App.css";
 
+// 2 options for "backendUrl", hosted server & localhost 
 const backendUrl = "https://wrapstar-server.vercel.app";
 // const backendUrl = "http://localhost:5000";
+
+// variable to designate which file types are allowed
 const ITEM_TYPE = "IMAGE";
 
+// function for drag & drop images
+// part 1 includes drag
 const DraggableImage = ({ image, index, moveImage, removeImage }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ITEM_TYPE,
@@ -18,6 +24,7 @@ const DraggableImage = ({ image, index, moveImage, removeImage }) => {
     }),
   });
 
+  // part 2 includes drop
   const [, drop] = useDrop({
     accept: ITEM_TYPE,
     hover: (draggedItem) => {
@@ -28,6 +35,7 @@ const DraggableImage = ({ image, index, moveImage, removeImage }) => {
     },
   });
 
+  // return for drag & drop function
   return (
     <div
       ref={(node) => drag(drop(node))}
@@ -50,6 +58,7 @@ const DraggableImage = ({ image, index, moveImage, removeImage }) => {
   );
 };
 
+// function container for app functions
 const App = () => {
   const [celebrity, setCelebrity] = useState("");
   const [images, setImages] = useState([]);
@@ -57,6 +66,7 @@ const App = () => {
   const [customImages, setCustomImages] = useState([]);
   const galleryRef = useRef(null); // Ref for capturing the gallery snapshot
 
+  // fucntion to take user input for API search
   const handleSearch = async () => {
     if (!celebrity) return alert("Please enter a celebrity's name!");
 
@@ -67,7 +77,9 @@ const App = () => {
       );
       const imagesResults = response.data.images_results.slice(0, 25);
 
-      // Convert each image to a Blob URL
+      // convert image to a Blob URL
+      // added because issue with backend not handling direct URL correctly when some URLs were different
+      // this makes then all the same formatting
       const processedImages = await Promise.all(
         imagesResults.map(async (img) => {
           try {
@@ -79,12 +91,12 @@ const App = () => {
             return { custom: true, src: objectUrl };
           } catch (err) {
             console.error("Error processing image:", err);
-            return null; // Skip images that fail to load
+            return null; // added to skip any images that fail to load
           }
         })
       );
 
-      setImages(processedImages.filter(Boolean)); // Remove any failed images
+      setImages(processedImages.filter(Boolean)); // added to remove any images that failed to load
     } catch (error) {
       console.error("Error fetching images:", error);
       alert("Failed to fetch images. Please try again.");
@@ -93,37 +105,42 @@ const App = () => {
     }
   };
 
+  // function to handle folder selection process by prompting OS selection and file type filter
   const handleFolderSelection = (event) => {
     const files = Array.from(event.target.files);
-  
-    // Allowed file extensions (for extra safety)
+
+    // these are the accepted file types
     const allowedExtensions = ["png", "gif", "tiff", "tif", "jpeg", "jpg", "bmp", "raw"];
-  
-    // Allowed MIME types (more reliable check)
+
+    // also check file type by MIME properties for improved accuracy
+    // added since some file extentions are capitalized or are the same but just different enough to not count by file extension
+    // example .jpg vs .JPG vs .jpeg
     const allowedMimeTypes = ["image/png", "image/gif", "image/tiff", "image/jpeg", "image/bmp"];
-  
+
     const imageFiles = files.filter((file) => {
       const fileExtension = file.name.split(".").pop().toLowerCase();
       const fileMimeType = file.type;
-  
+
       console.log(`File: ${file.name}, Extension: ${fileExtension}, MIME Type: ${fileMimeType}`);
-  
-      // Check if the extension OR the MIME type is valid
+
+      // check if the extension or the MIME type is valid as an additive check
       return allowedExtensions.includes(fileExtension) || allowedMimeTypes.includes(fileMimeType);
     });
-  
+
+    // message if no files found
     if (imageFiles.length === 0) {
       alert(
         "No valid image files selected! Please choose PNG, GIF, TIFF, JPEG, JPG, BMP, or RAW files."
       );
       return;
     }
-  
+
+    // to add the images from files to the useState of the image selection folder
     const imageUrls = imageFiles.map((file) => URL.createObjectURL(file));
     setCustomImages(imageUrls);
   };
-  
 
+  // function to handle populating gallery with custom images form the selection folder
   const handleCustomImageClick = (src) => {
     setImages((prevImages) => {
       if (prevImages.length >= 25) {
@@ -134,10 +151,12 @@ const App = () => {
     });
   };
 
+  // function to remove images from gallery when their red X is clicked
   const handleRemoveImage = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  // function to update the location of images when one is drag & dropped
   const moveImage = (fromIndex, toIndex) => {
     setImages((prevImages) => {
       const updatedImages = [...prevImages];
@@ -147,35 +166,35 @@ const App = () => {
     });
   };
 
+  // function to handle when user clicks on save button
   const handleSaveImage = async () => {
-    // Hide the red X buttons
+    // to hide the red X before file save
     document.querySelectorAll(".remove-button").forEach((btn) => {
       btn.style.visibility = "hidden";
     });
 
-    // Turn off image-placeholder borders
+    // to disable image-placeholder borders
     document.querySelectorAll(".image-placeholder").forEach((placeholder) => {
       placeholder.style.border = "none";
     });
 
-    // Capture the gallery
+    // to use html2canvas library to capture the image gallery
     const canvas = await html2canvas(galleryRef.current);
     const base64Image = canvas.toDataURL("image/png");
 
-    // Restore red X buttons after capturing
+    // to hide the red X before file save
     document.querySelectorAll(".remove-button").forEach((btn) => {
       btn.style.visibility = "visible";
     });
 
-    // Restore image-placeholder borders
+    // to restore image-placeholder borders
     document.querySelectorAll(".image-placeholder").forEach((placeholder) => {
       placeholder.style.border = "2px dashed gray"; // Restore original border
     });
 
-    // Create a new canvas for 400 images (20x20 grid of the captured gallery)
+    // to create a new canvas for all 400 images (20x20 grid of the captured gallery)
     const finalCanvas = document.createElement("canvas");
     const ctx = finalCanvas.getContext("2d");
-
     finalCanvas.width = canvas.width * 4;
     finalCanvas.height = canvas.height * 4;
 
@@ -185,7 +204,7 @@ const App = () => {
       }
     }
 
-    // Save final image
+    // to save the newly created file
     const finalImage = finalCanvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = finalImage;
@@ -193,6 +212,7 @@ const App = () => {
     link.click();
   };
 
+  // html for the page
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App">
